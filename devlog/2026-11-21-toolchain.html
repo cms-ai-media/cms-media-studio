@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工具清單：一集節目背後用了哪些模型與工具｜開發誌</title>
+<meta name="description" content="中文看世界製作室的工具清單：從下載、寫稿、配音、驗收、版型、合成、示意動畫到上架與成績追蹤，每一步用了什麼。">
+<link rel="stylesheet" href="../style.css"></head><body><main>
+<p class="muted">開發誌 · 2026-11-21 · 附錄</p>
+<h1>工具清單：一集節目背後用了哪些模型與工具</h1>
+
+<p>照製作的順序排。除了標明的雲端服務，運算都在家裡一台有顯示卡的 Windows 電腦上跑；AI 助手是 Claude（Claude Code 與桌面版），
+負責寫程式、寫稿、跑製作、回報。</p>
+
+<div class="tablewrap"><table>
+<tr><th>步驟</th><th>用什麼</th><th>備註</th></tr>
+<tr><td>立案、審稿、決定</td><td>控制台：Claude Artifact 頁面＋共享資料庫</td><td>平板可用；每一筆寫入帶版本號</td></tr>
+<tr><td>本機值班</td><td>Claude 桌面版的排程任務</td><td>每 30 分鐘看一次有沒有新的交辦</td></tr>
+<tr><td>大檔素材匣</td><td>Google Drive 資料夾</td><td>小檔直接傳到控制台</td></tr>
+<tr><td>下載來源影片</td><td>yt-dlp</td><td>參考讀音只抓需要的那幾秒</td></tr>
+<tr><td>英文逐字稿</td><td>影片自帶字幕；沒有就用 faster-whisper</td><td>每一句的時間可以在控制台點</td></tr>
+<tr><td>寫稿</td><td>頻道主的大綱或初稿（有時先經 ChatGPT）＋Claude</td><td>程式產生製作腳本，逐字比對初稿</td></tr>
+<tr><td>旁白配音</td><td>F5-TTS（聲音複製，本機）</td><td>頻道主本人的參考音</td></tr>
+<tr><td>讀音</td><td>rjieba、pypinyin、自訂破音字字典、英文念法表</td><td>跟姊妹頻道共用</td></tr>
+<tr><td>聽寫驗收與字幕對時</td><td>faster-whisper（small／medium）</td><td>音量另外量，辨識不全信</td></tr>
+<tr><td>音高、長度、頻譜</td><td>Praat（parselmouth）</td><td>挑語氣、查音節數</td></tr>
+<tr><td>版型設計</td><td>Claude Design</td><td>交回 HTML／CSS，原檔不動</td></tr>
+<tr><td>算圖與排字</td><td>無頭 Chrome、Playwright、瀏覽器的 <code>Intl.Segmenter</code></td><td>引擎與控制台用同一份排字程式</td></tr>
+<tr><td>圖解與章節地圖</td><td>網頁圖解＋推拉鏡頭；NASA Worldview／GIBS 衛星圖</td><td>公有領域影像</td></tr>
+<tr><td>示意動畫</td><td>Python＋Pillow 逐格畫</td><td>「簡化示意，比例不照實」</td></tr>
+<tr><td>實拍素材</td><td>Pexels、美國國家公園管理局、NASA、土地管理局、維基共享資源</td><td>授權各自不同，見出處那一篇</td></tr>
+<tr><td>讓照片動起來</td><td>LTX 影片模型（ComfyUI，本機）</td><td>只在本機跑，跟另一個頻道排隊用顯示卡</td></tr>
+<tr><td>早期的生成圖</td><td>本機 ComfyUI</td><td>現在是最後手段</td></tr>
+<tr><td>合成、混音、響度</td><td>ffmpeg</td><td>旁白 −17、原音 −18 LUFS，峰值 −1 dBTP</td></tr>
+<tr><td>配樂</td><td>YouTube 音效庫、CC BY 曲目</td><td>曲庫清單登記授權與 credit</td></tr>
+<tr><td>宣傳短片</td><td>自寫的直式短片引擎（同一套聲音與字幕）</td><td>封面與開頭逐字對齊</td></tr>
+<tr><td>上傳與上架</td><td>YouTube Data API（私人上傳）、YouTube Studio</td><td>相關影片與短片縮圖只能在 Studio 設</td></tr>
+<tr><td>成績追蹤</td><td>YouTube Data API＋YouTube Analytics API</td><td>只讀；每次存新快照</td></tr>
+<tr><td>驗證</td><td>自寫的回歸重做與比對工具、控制台的自動測試</td><td>逐位元比對</td></tr>
+</table></div>
+
+<p class="muted">本頻道由 AI 協助製作與記錄，選題、判斷與觀點出自頻道主本人。文中不含任何憑證與金鑰。</p>
+<nav><a href="index.html">回開發誌 Devlog</a><a href="2026-11-21-bit-exact.html">← 上一篇</a><a href="../index.html">回首頁 Home</a></nav>
+</main></body></html>

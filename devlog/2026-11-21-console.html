@@ -1,0 +1,69 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工作台在平板上，工廠在家裡｜開發誌</title>
+<meta name="description" content="控制台是頻道主唯一的操作介面：決定在這裡做、意見在這裡留、成品在這裡看。這一篇記錄它怎麼從「按了只會排隊」長成可以在平板上指揮全線的工作台。">
+<link rel="stylesheet" href="../style.css"></head><body><main>
+<p class="muted">開發誌 · 2026-11-21 · 系列（十六）控制台</p>
+<h1>工作台在平板上，工廠在家裡</h1>
+
+<p>第二版立案第二天，頻道主把他要的東西講得很明白：</p>
+<blockquote>I want to have as much control, status indicator, and action buttons on the control console, less in this App with command or prompts.</blockquote>
+<p>能做成控制台按鈕與狀態燈的，就不要讓他到對話裡下指令。從此每一個新功能都先問：<strong>控制台上的按鈕在哪裡？狀態在哪裡看？</strong></p>
+
+<h2>控制台是什麼</h2>
+<p>控制台是一頁網頁應用（用 Claude 的 Artifact 架的），附一個共享的小型資料庫。每一集、每一章、每一個要他決定的問題、每一則看片留言，
+都是資料庫裡的一份文件。本機那一頭讀這些文件開工，做完把成品與回覆寫回來。兩邊寫同一個資料庫，所以每次寫入都帶上「我上次讀到的版本號」，
+版本不對就整筆重讀、只改自己那一份。</p>
+<svg class="diagram" viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="平板上的控制台、共享資料庫、家裡的本機三者的關係">
+<defs><marker id="a11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+<g font-size="15" fill="var(--ink)" text-anchor="middle">
+<rect x="10" y="40" width="190" height="120" rx="10" fill="var(--hl)" fill-opacity="0.85"/>
+<text x="105" y="72" fill="#fff" font-size="16">平板：控制台</text><text x="105" y="98" fill="#fff" font-size="13">決定・看片留言・素材匣</text><text x="105" y="120" fill="#fff" font-size="13">放行・排程・頻道守則</text><text x="105" y="142" fill="#fff" font-size="13">人：工作台</text>
+<rect x="255" y="60" width="190" height="80" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+<text x="350" y="92">共享資料庫</text><text x="350" y="116" class="cap">每一筆寫入帶版本號</text>
+<rect x="500" y="40" width="190" height="120" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+<text x="595" y="72" font-size="16">家裡的電腦</text><text x="595" y="98" class="cap">值班排程每 30 分鐘醒來</text><text x="595" y="120" class="cap">配音・合成・配樂・上架資料</text><text x="595" y="142" class="cap">機器：工廠</text>
+<line x1="200" y1="90" x2="251" y2="90" stroke="var(--muted)" marker-end="url(#a11)"/><line x1="255" y1="112" x2="204" y2="112" stroke="var(--muted)" marker-end="url(#a11)"/>
+<line x1="445" y1="90" x2="496" y2="90" stroke="var(--muted)" marker-end="url(#a11)"/><line x1="500" y1="112" x2="449" y2="112" stroke="var(--muted)" marker-end="url(#a11)"/>
+<text x="350" y="200" class="cap">對話是例外：下載、上傳、公開這類動作，仍要他在對話裡說一聲。</text>
+</g></svg>
+
+<h2>決定放在控制台，不在對話裡</h2>
+<p>本機需要頻道主決定的事，寫成「本集選項」：題目、為什麼要問、幾個選項、建議哪一個，必要時附樣片。
+本機只能出題，不能改他選的答案；照他的選擇做了，就標上「已照做」，他之後要改會先被提醒一次，改了本機就知道哪些工作要重做。</p>
+<p>有一次，控制台上七章都已經排好「送逐章合成」、版型選的是 B，我們在對話裡跳出一個選單問：「要用 B 還是新的 F？」——他直接把選單關了。
+這件事教會我們：<strong>他存好的設定、按過的按鈕，就是答案。</strong>照著做，回報裡寫清楚怎麼改就好。</p>
+
+<h2>「按了只會排隊」</h2>
+<p>做到第八集的時候，頻道主提出一個新目標：</p>
+<blockquote>即使我不在本機，大部分的籌劃的工作、審查的工作，我可以通過 tablet 裝置就可以做到。</blockquote>
+<p>我們回頭翻了前三集的工作紀錄，發現幾個問題：控制台上的每一個按鈕都<strong>只會排隊</strong>，要等他回到電腦前打一個指令，本機才會開工；
+沒有地方上傳檔案，他自己拍的影片只能放在本機資料夾或社群網站上；看片的意見沒有時間碼，他在對話裡打「13:48–13:52」；
+而好幾次大改，都發生在他看完整片之後。</p>
+
+<h2>第一階段：讓平板真的能用</h2>
+<ul>
+<li><strong>本機值班。</strong>一個每 30 分鐘醒來一次的排程：控制台每次排隊都順手記一筆「有新工作」，值班看到了就掃一次全部的交辦，開工。</li>
+<li><strong>在線燈。</strong>標題旁邊一顆燈，45 分鐘內有人值班是綠燈、3 小時內是黃燈。他在外面就知道家裡的電腦有沒有在聽。</li>
+<li><strong>素材匣。</strong>20 MB 以內的檔案直接傳到控制台，大檔放進一個雲端硬碟資料夾，按一下「我放好了」；本機收走之後回報。</li>
+<li><strong>「等你看、等你選」。</strong>所有要他看或選的東西集中在一個收件匣。</li>
+<li><strong>看片留言。</strong>在播放器底下留言，自動記下第幾秒。這一條後來證明比什麼都重要——讀音試聽他就是用留言選的（見<a href="2026-11-21-english-names.html">（四）</a>）。</li>
+<li><strong>平板版面。</strong>按鈕至少 44 像素、單欄、不靠滑鼠懸停。</li>
+</ul>
+
+<h2>平板連不到家裡的電腦</h2>
+<p>上線三週後，平板有一天顯示「無法連到你的電腦」。電腦沒關、也設了永不睡眠，查了系統事件才發現：這台電腦用的是新式的待機機制，
+<strong>螢幕一關（十分鐘沒動）就進入低耗電的待機</strong>，桌面程式跟著暫停。修法是把「插電時多久關螢幕」改成永不，
+螢幕改用顯示器自己的按鈕關——這是頻道主自己動手改的，系統設定我們不代改。</p>
+
+<h2>幾個小規矩</h2>
+<ul>
+<li><strong>誰處理了留言，誰就把它結案。</strong>在對話裡回覆了，卻沒把留言標成完成，半小時後值班排程會再做一次。</li>
+<li><strong>有人在長時間互動工作時，要自己接佇列。</strong>值班看到有別的工作階段在做，會跳過這一輪；結果他按的「現在更新」排了兩個小時。</li>
+<li><strong>控制台的檔案空間一個是 1 GB。</strong>已經上架或排程的集數，它們的預覽可以刪；頻道共用的片頭片尾、頻道守則引用的例子影片，一律保留。</li>
+</ul>
+<p>姊妹頻道「台海局勢，外面怎麼說？」的開發誌有一篇<a href="https://cms-ai-media.github.io/strait-views/devlog/2026-11-08-dispatch.html">〈把平板變成遙控器〉</a>，
+講的是同一個想法在那邊的樣子。兩邊互相借了不少東西。</p>
+
+<p class="muted">本頻道由 AI 協助製作與記錄，選題、判斷與觀點出自頻道主本人。文中不含任何憑證與金鑰。</p>
+<nav><a href="index.html">回開發誌 Devlog</a><a href="2026-11-21-performance.html">← 上一篇</a><a href="2026-11-21-rules.html">下一篇 →</a><a href="../index.html">回首頁 Home</a></nav>
+</main></body></html>

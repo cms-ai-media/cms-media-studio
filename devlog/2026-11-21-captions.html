@@ -1,0 +1,63 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>字幕的時間是量的，不是估的｜開發誌</title>
+<meta name="description" content="字幕照字數比例分配時間，原音段最多差 4.5 秒。改成用語音辨識與音量量出每個字的時間之後，又學會一件事：檢查報不同步，要先分真的還是誤報。">
+<link rel="stylesheet" href="../style.css"></head><body><main>
+<p class="muted">開發誌 · 2026-11-21 · 系列（五）字幕</p>
+<h1>字幕的時間是量的，不是估的</h1>
+
+<p>第一集的開場預覽，頻道主看完說：「字幕有時快、有時慢，就是沒對上。」</p>
+<p>原因很單純：那時候字幕的時間是<strong>照字數比例分配</strong>的——一段聲音十秒、稿子五十個字，每個字就分到 0.2 秒。
+量了之後發現，旁白還好，差 0.1 到 0.4 秒；<strong>原音段最多差到 4.5 秒</strong>，因為講者句子之間有長長的停頓，被平均攤掉了。
+從那天起規矩只有一句：字幕的時間是量的，不是估的。</p>
+
+<h2>怎麼量</h2>
+<ul>
+<li><strong>旁白</strong>：每個語音單位跑一次語音辨識（faster-whisper，在 CPU 上跑），取每個字的時間。稿子是已知的，辨識只是拿來取時間：對得上的字當錨點，其餘內插。</li>
+<li><strong>原音</strong>：先量英文逐詞的時間，再把中文翻譯<strong>照句子</strong>對到英文的句子上（句數不同時，一句中文可以對兩三句英文）；句子裡再照逗號分小段。停頓留在句子之間。</li>
+<li><strong>顯示</strong>：字幕比聲音早 0.10 秒出現；講完最多再留 1.5 秒；每句至少留夠看完的時間（一個字約 0.12 秒），不夠就跟前一句借。</li>
+<li><strong>出片前</strong>：把整章的純旁白軌<strong>獨立再量一次</strong>，字幕比聲音晚超過 0.3 秒、或早超過 0.6 秒，就列為問題。</li>
+</ul>
+
+<h2>辨識會把字放錯位置</h2>
+<svg class="diagram" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="語音辨識把停頓後的第一個字標在停頓之前，用音量找出聲音真正開始的地方">
+<g font-size="14" fill="var(--ink)">
+<text x="10" y="22" class="cap">音量</text>
+<rect x="60" y="34" width="230" height="40" rx="4" fill="var(--muted)" fill-opacity="0.35"/>
+<rect x="400" y="34" width="280" height="40" rx="4" fill="var(--muted)" fill-opacity="0.35"/>
+<text x="175" y="59" text-anchor="middle">前一句……的尾巴</text>
+<text x="345" y="59" text-anchor="middle" class="cap">停頓 0.5 秒</text>
+<text x="540" y="59" text-anchor="middle">下一句開始</text>
+<text x="10" y="110" class="cap">辨識</text>
+<rect x="262" y="94" width="58" height="26" rx="4" fill="var(--hl)" fill-opacity="0.85"/><text x="291" y="112" text-anchor="middle" fill="#fff" font-size="13">第一個字</text>
+<line x1="320" y1="107" x2="396" y2="107" stroke="var(--hl)" stroke-dasharray="4 3"/>
+<text x="10" y="160" class="cap">修正後</text>
+<rect x="400" y="144" width="58" height="26" rx="4" fill="var(--accent)" fill-opacity="0.9"/><text x="429" y="162" text-anchor="middle" fill="#fff" font-size="13">第一個字</text>
+<line x1="400" y1="80" x2="400" y2="186" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="408" y="194" class="cap">音量門檻 −30 dB：聲音真正開始的地方</text>
+</g></svg>
+<p>語音辨識有個習慣：<strong>停頓之後的第一個字，常常被標在停頓之前</strong>，掛在前一句的尾巴上。字幕就會在前一句還沒念完時換頁。
+解法是不全信辨識，回頭看音量：從標記的位置往後找聲音真正開始的地方。門檻也是量出來的——字尾的餘音大約 −33 dB，
+門檻設在 −30 dB，才不會把餘音當成還在講話。</p>
+
+<h2>先分真假，再決定怎麼處理</h2>
+<p>量得越細，檢查報出來的「不同步」越多。第二集九章裡有三章被報，頻道主問怎麼辦。我們一句一句拿音量核對，結果是：
+<strong>四句裡兩句是真的，兩句是誤報。</strong>這件事後來成了固定的順序——不直接重做，也不直接當誤報，先分真假。</p>
+<p>誤報的樣子很值得記下來：</p>
+<ul>
+<li>「水越來越少。河馬卻越來越多。」兩句有一樣的詞，辨識漏掉前一句，後一句被對到前一句的時間，報成<strong>晚 1.31 秒</strong>，實際是<strong>早 0.09 秒</strong>。</li>
+<li>帶著稿子當提示去辨識通常最準，但偶爾會把第一句整句跳過——模型以為那句已經寫過了。現在辨識完先看稿子有沒有「連續五個字以上沒對上」，有就換方式再辨識一次，挑對得最完整的。</li>
+<li>字幕剛好落在停頓中間，「停頓前」「停頓後」兩個候選時間差不多遠，檢查挑錯邊，把早 0.37 秒報成晚 0.33 秒。這種只要把那一句重配一次，換掉開頭的氣音，就過了。</li>
+</ul>
+<p>為此做了兩支小工具：一支不靠辨識，直接把「人聲開始／人聲停」跟字幕出現的時間排在一起給人看（辨識給的時間會錯，音量不會）；
+另一支用來更正快取裡某一個詞的起點，要附上原本的值和根據，原檔留底。成品量測也加了「第二次機會」：被判不同步的那一句，
+從音量找出附近人聲重新開始的地方，只辨識那三秒，確認一開頭念的就是這句字幕，兩件事都成立才改判。</p>
+
+<h2>抽格看不出同步</h2>
+<p>還有一個不在時間上、卻跟字幕有關的坑：一句字幕在成片裡折成了兩行，出片前的檢查沒攔到。原因是兩個錯疊在一起——
+算行寬時把破折號「—」和刪節號「…」當成半形；而偵測折行的方法對那種排版元素永遠只回一個框。改成直接量「每個字」的框之後才抓得到。</p>
+<p>這幾次之後留下的一句話，寫在開發手冊的踩坑表裡：<strong>抽格只能看出字有沒有，看不出對不對得上聲音。</strong>同步要靠量，
+而量出來的結果，也要先問一句「這是真的嗎」。</p>
+
+<p class="muted">本頻道由 AI 協助製作與記錄，選題、判斷與觀點出自頻道主本人。文中不含任何憑證與金鑰。</p>
+<nav><a href="index.html">回開發誌 Devlog</a><a href="2026-11-21-english-names.html">← 上一篇</a><a href="2026-11-21-mobile.html">下一篇 →</a><a href="../index.html">回首頁 Home</a></nav>
+</main></body></html>

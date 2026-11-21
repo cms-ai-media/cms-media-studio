@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>配樂：音量是量出來的，授權寫在說明欄｜開發誌</title>
+<meta name="description" content="配樂跟著節拍自動起落、開場與結尾換一首更有電影感的曲子、自然聲比旁白大；以及 CC BY 音樂的 credit 為什麼一定要在上傳那一刻就寫進說明欄。">
+<link rel="stylesheet" href="../style.css"></head><body><main>
+<p class="muted">開發誌 · 2026-11-21 · 系列（十三）配樂與自然聲</p>
+<h1>配樂：音量是量出來的，授權寫在說明欄</h1>
+
+<p>配樂是頻道主最常用耳朵直接調的東西：「a bit higher」「further increase 2db」。為了讓他的這種調整可以一句話就生效、
+換一首曲子也不用重調，配樂的音量從一開始就不是手動拉的，而是<strong>量出來、照規則算出來</strong>的。</p>
+
+<h2>跟著節拍起落</h2>
+<svg class="diagram" viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="配樂音量隨節拍起落：標題卡時揚起，旁白時降低，原音時再壓低">
+<g font-size="13" fill="var(--ink)" text-anchor="middle">
+<rect x="20" y="150" width="110" height="30" rx="5" fill="var(--hl)" fill-opacity="0.85"/><text x="75" y="170" fill="#fff">標題卡</text>
+<rect x="135" y="150" width="200" height="30" rx="5" fill="none" stroke="var(--line)" stroke-width="1.5"/><text x="235" y="170">旁白</text>
+<rect x="340" y="150" width="140" height="30" rx="5" fill="none" stroke="var(--muted)" stroke-dasharray="4 3"/><text x="410" y="170">原音（講者）</text>
+<rect x="485" y="150" width="190" height="30" rx="5" fill="none" stroke="var(--line)" stroke-width="1.5"/><text x="580" y="170">旁白</text>
+</g>
+<path d="M20 40 H122 C130 40 132 92 142 92 H330 C338 92 340 122 348 122 H474 C482 122 484 92 492 92 H675" fill="none" stroke="var(--accent)" stroke-width="3"/>
+<g font-size="13" fill="var(--muted)"><text x="24" y="32">比人聲低 9</text><text x="150" y="84">低 22</text><text x="352" y="114">低 30</text><text x="500" y="84">低 22</text></g>
+<text x="20" y="204" class="cap">配樂的音量（單位 LU，相對於人聲）。基準是量出來的，換曲不必重調。</text>
+</svg>
+<p>敘事的音床從片頭曲淡出的地方接手，一路鋪到片尾。標題卡沒有人聲，配樂揚起來；旁白時退到人聲底下 22 LU；
+原音是別人在講話，再壓低到 30。不夠長的曲子接回開頭，交叉淡接兩秒。每一首曲子先量響度，所以換曲時這些數字不用動。</p>
+
+<h2>開場與結尾換一首</h2>
+<p>第二集做完，頻道主說：序章和最後一章要用不同的配樂，「比中間各章更有電影感一點」，而且以後每一集都這樣。
+這件事做起來有兩個細節：</p>
+<ul>
+<li><strong>結尾的曲子倒著對齊</strong>——讓曲子本身的結尾落在片尾卡的最後一格，而不是在半途被淡出。</li>
+<li><strong>響度照「實際用到的那一段」量</strong>。很多電影配樂是漸強的，整首的平均響度跟用到的那一段差很多，照整首量會整段太大聲或太小聲。</li>
+</ul>
+<p>用哪一首是他的品味。本機挑候選、做幾段試聽放進控制台，他聽過再選；選之前，預覽先用本機建議的那一首。
+那一集的開場曲，他先說「a bit higher」，試了 +3 dB 之後說「further increase 2db」，定在 +5。</p>
+
+<h2>整體再小聲 4 dB</h2>
+<p>荒漠那一集，頻道主覺得配樂有點大聲，要我們做幾個不同程度的試聽，之後定一個長期的標準。
+同一段畫面做了四個版本：現在、−2、−4、−6 dB。他選了 −4。從那一集起，每一個新專案立案時就寫進這個設定；
+舊的集數沒有這個設定，行為完全不變。</p>
+
+<h2>自然聲要比旁白大</h2>
+<p>野生動物那一集，頻道主說了兩句很具體的話：「自然聲要比旁白大，可能是人們看完這部片子的記憶點。」以及，有動物聲音的片段，
+希望旁白跟動物的聲音同時存在。</p>
+<ul>
+<li>旁白停下來、讓它出來的自然聲——公鹿的嘶鳴、鹿角相撞——拉到比旁白（−17 LUFS）更大的 −14 LUFS。很尖的聲音光加增益會先撞到峰值上限，先過一道限幅再拉。</li>
+<li>旁白底下墊鏡頭自己的聲音：拉到 −28 LUFS，最多只加一定的分貝數，很小聲的一段不硬拉成雜音。</li>
+<li>能不能墊，先檢查：那幾秒有沒有人聲（語音辨識在沒人聲時會幻聽出「Thanks for watching」），有沒有藏著配樂。
+判斷配樂要<strong>看頻譜圖</strong>：鹿鳴是先往上滑、再拉長的高音；配樂是穩定的和弦與節奏。曾經有一段鹿鳴被調性的指標誤判成配樂。</li>
+</ul>
+<p>他後來又加了一條：影片裡的聲音豐富、有意義的時候，旁白就停下來，讓那個聲音自己說話。</p>
+
+<h2>授權：在上傳那一刻就寫好</h2>
+<p>早期的配樂只用 YouTube 音效庫或買斷的音樂。最近頻道主放進曲庫九首 Scott Buckley 的作品，授權是 CC BY 4.0，要求署名。
+他的交代是：「always add the credit in the description」。</p>
+<p>查授權時發現一個重要的細節：這位作曲家的 Content ID 是<strong>在上傳的那一刻</strong>掃說明欄，找不到他的名字就會提出版權聲明；
+事後才補上 credit，聲明不會自動撤銷，要另外填表、再提出異議。所以現在：</p>
+<ul>
+<li>曲庫裡每一首都登記在一份清單裡：曲名、作者、授權、作者網頁，以及作者規定的 credit 原文。新放一首，先到作者網頁核對授權、把署名格式原文抄進來再登記。</li>
+<li>整理上架資料的程式把 credit 一字不改放進說明欄的【配樂】那一行，再確認它真的在說明欄裡；上架步驟多一條「上傳時就把說明欄貼好」。</li>
+<li><strong>清單裡沒登記的曲子，程式直接停下來。</strong>寧可停，也不要上傳之後才發現。</li>
+</ul>
+<p>改完之後，拿以前的 40 筆正片紀錄、16 份寫好的說明欄、9 份短片的上架資料重跑一次——只用音效庫的，產出一字不差。</p>
+
+<p class="muted">本頻道由 AI 協助製作與記錄，選題、判斷與觀點出自頻道主本人。文中不含任何憑證與金鑰。</p>
+<nav><a href="index.html">回開發誌 Devlog</a><a href="2026-11-21-chapter-maps.html">← 上一篇</a><a href="2026-11-21-publishing.html">下一篇 →</a><a href="../index.html">回首頁 Home</a></nav>
+</main></body></html>
